@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="UTF-8" ?><ChoregrapheProject xmlns="http://www.aldebaran-robotics.com/schema/choregraphe/project.xsd" xar_version="3"><Box name="root" id="-1" localization="8" tooltip="Root box of Choregraphe&apos;s behavior. Highest level possible." x="0" y="0"><bitmap>media/images/box/root.png</bitmap><script language="4"><content><![CDATA[]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Timeline enable="0"><BehaviorLayer name="behavior_layer1"><BehaviorKeyframe name="keyframe1" index="1"><Diagram><Box name="Dialog" id="3" localization="8" tooltip="An example of multilanguage dialog implementation" x="302" y="262"><dialogFile>../RS/RS.dlg</dialogFile><bitmap>media/images/box/box-dialog.png</bitmap><script language="4"><content><![CDATA[]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Output name="cuisine" type="3" type_size="1" nature="2" inner="0" tooltip="" id="5" /><Output name="mealtype" type="3" type_size="1" nature="2" inner="0" tooltip="" id="6" /><Output name="option1" type="3" type_size="1" nature="2" inner="0" tooltip="" id="7" /><Output name="option2" type="3" type_size="1" nature="2" inner="0" tooltip="" id="8" /><Output name="nextinstruction" type="3" type_size="1" nature="2" inner="0" tooltip="" id="9" /><Resource name="Speech" type="Lock" timeout="0" /><Resource name="Speech recognition" type="Lock" timeout="0" /></Box><Box name="Show Web View" id="8" localization="8" tooltip="Shows the webview (html content) on the tablet.&#x0A;&#x0A;V1.0.0&#x0A;" x="500" y="61"><bitmap>media/images/box/internet/internet.png</bitmap><script language="4"><content><![CDATA[from naoqi import ALProxy
+
+class MyClass(GeneratedClass):
+
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        pass
+
+    def onUnload(self):
+        pass
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def onInput_onStart(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+
+        # create proxy on ALMemory
+        memProxy = ALProxy("ALMemory","localhost",9559)
+
+        #get data. Val can be int, float, list, string
+        cuisine = memProxy.getData("cuisine")
+        mealtype = memProxy.getData("mealtype")
+        option1 = memProxy.getData("option1")
+        option2 = memProxy.getData("option2")
+        nextinstruction = memProxy.getData("nextinstruction")
+
+
+        # Get the app name
+        appName = self.packageUid()
+
+        if appName:
+            if tabletService:
+                # use default robot IP address from the tablet
+                robotIP = "198.18.0.1" # tabletService.getRobotIp()
+                if nextinstruction:
+                    url = "http://{ip}/apps/{appName}/pages/step.html?nextinstruction={nextinstruction}".format(ip=robotIP, appName=appName, nextinstruction=nextinstruction)
+                else:
+                    if option1 and option2:
+                        url = "http://{ip}/apps/{appName}/pages/choice.html?cuisine={cuisine}&mealtype={mealtype}&option1={option1}&option2={option2}".format(ip=robotIP, appName=appName, cuisine=cuisine, mealtype=mealtype, option1=option1, option2=option2)
+                    else:
+                        if cuisine or mealtype:
+                            url = "http://{ip}/apps/{appName}/pages/displayinfo.html?cuisine={cuisine}&mealtype={mealtype}".format(ip=robotIP, appName=appName, cuisine=cuisine, mealtype=mealtype)
+                        else:
+                            url = "http://{ip}/apps/{appName}/pages/index.html".format(ip=robotIP, appName=appName)
+
+                self.logger.info(url)
+
+                # Show the web view on the tablet
+                tabletService.showWebview(url)
+            else:
+                self.logger.warning("Couldn't find tablet service, so can't set application: %s" % appName)
+
+        #
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" /></Box><Box name="Clear Memory" id="7" localization="8" tooltip="This box is empty and should be used to create any box diagram you would like.&#x0A;&#x0A;To edit its diagram, double-click on it." x="499" y="244"><bitmap>media/images/box/box-diagram.png</bitmap><script language="4"><content><![CDATA[]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Timeline enable="0"><BehaviorLayer name="behavior_layer1"><BehaviorKeyframe name="keyframe1" index="1"><Diagram><Box name="Remove Data / Event" id="6" localization="8" tooltip="Remove the given key from NAOqi&apos;s shared memory." x="170" y="157"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self):
+        self.memory.removeData(self.getParameter("key"))
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="4" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="mealtype" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="5" /></Box><Box name="Remove Data / Event (1)" id="1" localization="8" tooltip="Remove the given key from NAOqi&apos;s shared memory." x="169" y="45"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self):
+        self.memory.removeData(self.getParameter("key"))
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="4" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="cuisine" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="5" /></Box><Box name="Remove Data / Event (2)" id="2" localization="8" tooltip="Remove the given key from NAOqi&apos;s shared memory." x="169" y="265"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self):
+        self.memory.removeData(self.getParameter("key"))
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="4" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="option1" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="5" /></Box><Box name="Remove Data / Event (3)" id="3" localization="8" tooltip="Remove the given key from NAOqi&apos;s shared memory." x="172" y="379"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self):
+        self.memory.removeData(self.getParameter("key"))
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="4" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="option2" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="5" /></Box><Box name="Remove Data / Step" id="4" localization="8" tooltip="Remove the given key from NAOqi&apos;s shared memory." x="177" y="499"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self):
+        self.memory.removeData(self.getParameter("key"))
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="4" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="nextinstruction" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="5" /></Box><Box name="Remove Data / Step (1)" id="5" localization="8" tooltip="Remove the given key from NAOqi&apos;s shared memory." x="182" y="612"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self):
+        self.memory.removeData(self.getParameter("key"))
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="4" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="nxtProp" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="5" /></Box><Box name="Remove Data / Step (2)" id="7" localization="8" tooltip="Remove the given key from NAOqi&apos;s shared memory." x="189" y="730"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self):
+        self.memory.removeData(self.getParameter("key"))
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="4" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="prvsProp" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="5" /></Box><Link inputowner="1" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="6" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="2" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="3" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="0" indexofinput="4" outputowner="3" indexofoutput="3" /><Link inputowner="0" indexofinput="4" outputowner="1" indexofoutput="3" /><Link inputowner="0" indexofinput="4" outputowner="6" indexofoutput="3" /><Link inputowner="0" indexofinput="4" outputowner="2" indexofoutput="3" /><Link inputowner="4" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="0" indexofinput="4" outputowner="4" indexofoutput="3" /><Link inputowner="5" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="7" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="0" indexofinput="4" outputowner="7" indexofoutput="3" /><Link inputowner="0" indexofinput="4" outputowner="5" indexofoutput="3" /></Diagram></BehaviorKeyframe></BehaviorLayer></Timeline></Box><Box name="Subscribe to Events" id="6" localization="8" tooltip="This box is empty and should be used to create any box diagram you would like.&#x0A;&#x0A;To edit its diagram, double-click on it." x="306" y="113"><bitmap>media/images/box/box-diagram.png</bitmap><script language="4"><content><![CDATA[]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Output name="onEvent" type="0" type_size="1" nature="2" inner="0" tooltip="" id="5" /><Timeline enable="0"><BehaviorLayer name="behavior_layer1"><BehaviorKeyframe name="keyframe1" index="1"><Diagram><Box name="Subscribe to Cuisine Event" id="5" localization="8" tooltip="Subscribes to a signal on a NAOqi2 service, or an event in NAOqi&apos;s shared memory&#x0A;When subscribed, the output will be triggered every time the signal is emitted or the event is raised." x="275" y="59"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        import threading
+        self.lock = threading.RLock()
+        self.signal = None
+        self.linkId = -1
+
+    def onUnload(self):
+        with self.lock:
+            self.unsubscribe()
+
+    def onInput_onStart(self):
+        with self.lock:
+            self.unsubscribe()
+            event = self.getParameter("event")
+
+            if(len(event) == 0):
+                self.onError("No event or signal given.")
+                return
+
+            params = event.split(".")
+            if(len(params) == 2):
+                try:
+                    self.signal = getattr(self.session().service(params[0]), params[1])
+                except Exception as e:
+                    mem = self.session().service("ALMemory")
+                    if(event in mem.getEventList()):
+                        self.signal = mem.subscriber(event).signal
+                    else:
+                        self.onError(event + ": no such service.signal pair found, and no such event declared in ALMemory. Aborting.")
+                        return
+            else:
+                self.signal = self.session().service("ALMemory").subscriber(event).signal
+
+            self.linkId = self.signal.connect(self.reemitSignal)
+
+    def onInput_onStop(self):
+        with self.lock:
+            self.unsubscribe()
+            self.onStopped()
+
+    def unsubscribe(self):
+        if(self.signal is not None and self.linkId != -1):
+            self.signal.disconnect(self.linkId)
+
+        del self.signal
+        self.signal = None
+        self.linkId = -1
+
+    def reemitSignal(self, *args):
+        if(len(args) == 0):
+            self.onEvent()
+        elif(len(args) == 1):
+            self.onEvent(args[0])
+        else:
+            self.onEvent(args)]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="When this input is activated, the box will try to subscribe to the signal or the event passed in the box parameter.&#x0A;&#x0A;If it is retriggered and the parameter has changed, the box will undo the previous subscription and subscribe to the new signal or the new event." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the box and cancel the subscription, if any." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="This output is triggered when the box encounters an error, and contains the error message." id="5" /><Output name="onEvent" type="0" type_size="1" nature="2" inner="0" tooltip="This output is triggered each time the signal/event to which the box is connected is emitted/raised. It will carry the payload associated with the signal emission/event raise." id="6" /><Parameter name="event" inherits_from_parent="0" content_type="3" value="cuisine" default_value="" custom_choice="0" tooltip='This parameter describes the signal to connect to, and the service advertising this signal.&#x0A;&#x0A;Use the pattern &quot;Service.Signal&quot; to connect to a signal, or the event key to connect to an event.' id="7" /></Box><Box name="Subscribe to Meal Type Event" id="1" localization="8" tooltip="Subscribes to a signal on a NAOqi2 service, or an event in NAOqi&apos;s shared memory&#x0A;When subscribed, the output will be triggered every time the signal is emitted or the event is raised." x="275" y="165"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        import threading
+        self.lock = threading.RLock()
+        self.signal = None
+        self.linkId = -1
+
+    def onUnload(self):
+        with self.lock:
+            self.unsubscribe()
+
+    def onInput_onStart(self):
+        with self.lock:
+            self.unsubscribe()
+            event = self.getParameter("event")
+
+            if(len(event) == 0):
+                self.onError("No event or signal given.")
+                return
+
+            params = event.split(".")
+            if(len(params) == 2):
+                try:
+                    self.signal = getattr(self.session().service(params[0]), params[1])
+                except Exception as e:
+                    mem = self.session().service("ALMemory")
+                    if(event in mem.getEventList()):
+                        self.signal = mem.subscriber(event).signal
+                    else:
+                        self.onError(event + ": no such service.signal pair found, and no such event declared in ALMemory. Aborting.")
+                        return
+            else:
+                self.signal = self.session().service("ALMemory").subscriber(event).signal
+
+            self.linkId = self.signal.connect(self.reemitSignal)
+
+    def onInput_onStop(self):
+        with self.lock:
+            self.unsubscribe()
+            self.onStopped()
+
+    def unsubscribe(self):
+        if(self.signal is not None and self.linkId != -1):
+            self.signal.disconnect(self.linkId)
+
+        del self.signal
+        self.signal = None
+        self.linkId = -1
+
+    def reemitSignal(self, *args):
+        if(len(args) == 0):
+            self.onEvent()
+        elif(len(args) == 1):
+            self.onEvent(args[0])
+        else:
+            self.onEvent(args)]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="When this input is activated, the box will try to subscribe to the signal or the event passed in the box parameter.&#x0A;&#x0A;If it is retriggered and the parameter has changed, the box will undo the previous subscription and subscribe to the new signal or the new event." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the box and cancel the subscription, if any." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="This output is triggered when the box encounters an error, and contains the error message." id="5" /><Output name="onEvent" type="0" type_size="1" nature="2" inner="0" tooltip="This output is triggered each time the signal/event to which the box is connected is emitted/raised. It will carry the payload associated with the signal emission/event raise." id="6" /><Parameter name="event" inherits_from_parent="0" content_type="3" value="mealtype" default_value="" custom_choice="0" tooltip='This parameter describes the signal to connect to, and the service advertising this signal.&#x0A;&#x0A;Use the pattern &quot;Service.Signal&quot; to connect to a signal, or the event key to connect to an event.' id="7" /></Box><Box name="Meal Option 1 Subscribe" id="2" localization="8" tooltip="Subscribes to a signal on a NAOqi2 service, or an event in NAOqi&apos;s shared memory&#x0A;When subscribed, the output will be triggered every time the signal is emitted or the event is raised." x="279" y="273"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        import threading
+        self.lock = threading.RLock()
+        self.signal = None
+        self.linkId = -1
+
+    def onUnload(self):
+        with self.lock:
+            self.unsubscribe()
+
+    def onInput_onStart(self):
+        with self.lock:
+            self.unsubscribe()
+            event = self.getParameter("event")
+
+            if(len(event) == 0):
+                self.onError("No event or signal given.")
+                return
+
+            params = event.split(".")
+            if(len(params) == 2):
+                try:
+                    self.signal = getattr(self.session().service(params[0]), params[1])
+                except Exception as e:
+                    mem = self.session().service("ALMemory")
+                    if(event in mem.getEventList()):
+                        self.signal = mem.subscriber(event).signal
+                    else:
+                        self.onError(event + ": no such service.signal pair found, and no such event declared in ALMemory. Aborting.")
+                        return
+            else:
+                self.signal = self.session().service("ALMemory").subscriber(event).signal
+
+            self.linkId = self.signal.connect(self.reemitSignal)
+
+    def onInput_onStop(self):
+        with self.lock:
+            self.unsubscribe()
+            self.onStopped()
+
+    def unsubscribe(self):
+        if(self.signal is not None and self.linkId != -1):
+            self.signal.disconnect(self.linkId)
+
+        del self.signal
+        self.signal = None
+        self.linkId = -1
+
+    def reemitSignal(self, *args):
+        if(len(args) == 0):
+            self.onEvent()
+        elif(len(args) == 1):
+            self.onEvent(args[0])
+        else:
+            self.onEvent(args)]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="When this input is activated, the box will try to subscribe to the signal or the event passed in the box parameter.&#x0A;&#x0A;If it is retriggered and the parameter has changed, the box will undo the previous subscription and subscribe to the new signal or the new event." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the box and cancel the subscription, if any." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="This output is triggered when the box encounters an error, and contains the error message." id="5" /><Output name="onEvent" type="0" type_size="1" nature="2" inner="0" tooltip="This output is triggered each time the signal/event to which the box is connected is emitted/raised. It will carry the payload associated with the signal emission/event raise." id="6" /><Parameter name="event" inherits_from_parent="0" content_type="3" value="option1" default_value="" custom_choice="0" tooltip='This parameter describes the signal to connect to, and the service advertising this signal.&#x0A;&#x0A;Use the pattern &quot;Service.Signal&quot; to connect to a signal, or the event key to connect to an event.' id="7" /></Box><Box name="Meal Option Two Subscribe" id="4" localization="8" tooltip="Subscribes to a signal on a NAOqi2 service, or an event in NAOqi&apos;s shared memory&#x0A;When subscribed, the output will be triggered every time the signal is emitted or the event is raised." x="279" y="380"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        import threading
+        self.lock = threading.RLock()
+        self.signal = None
+        self.linkId = -1
+
+    def onUnload(self):
+        with self.lock:
+            self.unsubscribe()
+
+    def onInput_onStart(self):
+        with self.lock:
+            self.unsubscribe()
+            event = self.getParameter("event")
+
+            if(len(event) == 0):
+                self.onError("No event or signal given.")
+                return
+
+            params = event.split(".")
+            if(len(params) == 2):
+                try:
+                    self.signal = getattr(self.session().service(params[0]), params[1])
+                except Exception as e:
+                    mem = self.session().service("ALMemory")
+                    if(event in mem.getEventList()):
+                        self.signal = mem.subscriber(event).signal
+                    else:
+                        self.onError(event + ": no such service.signal pair found, and no such event declared in ALMemory. Aborting.")
+                        return
+            else:
+                self.signal = self.session().service("ALMemory").subscriber(event).signal
+
+            self.linkId = self.signal.connect(self.reemitSignal)
+
+    def onInput_onStop(self):
+        with self.lock:
+            self.unsubscribe()
+            self.onStopped()
+
+    def unsubscribe(self):
+        if(self.signal is not None and self.linkId != -1):
+            self.signal.disconnect(self.linkId)
+
+        del self.signal
+        self.signal = None
+        self.linkId = -1
+
+    def reemitSignal(self, *args):
+        if(len(args) == 0):
+            self.onEvent()
+        elif(len(args) == 1):
+            self.onEvent(args[0])
+        else:
+            self.onEvent(args)]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="When this input is activated, the box will try to subscribe to the signal or the event passed in the box parameter.&#x0A;&#x0A;If it is retriggered and the parameter has changed, the box will undo the previous subscription and subscribe to the new signal or the new event." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the box and cancel the subscription, if any." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="This output is triggered when the box encounters an error, and contains the error message." id="5" /><Output name="onEvent" type="0" type_size="1" nature="2" inner="0" tooltip="This output is triggered each time the signal/event to which the box is connected is emitted/raised. It will carry the payload associated with the signal emission/event raise." id="6" /><Parameter name="event" inherits_from_parent="0" content_type="3" value="option2" default_value="" custom_choice="0" tooltip='This parameter describes the signal to connect to, and the service advertising this signal.&#x0A;&#x0A;Use the pattern &quot;Service.Signal&quot; to connect to a signal, or the event key to connect to an event.' id="7" /></Box><Box name="Recipe Step" id="3" localization="8" tooltip="Subscribes to a signal on a NAOqi2 service, or an event in NAOqi&apos;s shared memory&#x0A;When subscribed, the output will be triggered every time the signal is emitted or the event is raised." x="283" y="492"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        import threading
+        self.lock = threading.RLock()
+        self.signal = None
+        self.linkId = -1
+
+    def onUnload(self):
+        with self.lock:
+            self.unsubscribe()
+
+    def onInput_onStart(self):
+        with self.lock:
+            self.unsubscribe()
+            event = self.getParameter("event")
+
+            if(len(event) == 0):
+                self.onError("No event or signal given.")
+                return
+
+            params = event.split(".")
+            if(len(params) == 2):
+                try:
+                    self.signal = getattr(self.session().service(params[0]), params[1])
+                except Exception as e:
+                    mem = self.session().service("ALMemory")
+                    if(event in mem.getEventList()):
+                        self.signal = mem.subscriber(event).signal
+                    else:
+                        self.onError(event + ": no such service.signal pair found, and no such event declared in ALMemory. Aborting.")
+                        return
+            else:
+                self.signal = self.session().service("ALMemory").subscriber(event).signal
+
+            self.linkId = self.signal.connect(self.reemitSignal)
+
+    def onInput_onStop(self):
+        with self.lock:
+            self.unsubscribe()
+            self.onStopped()
+
+    def unsubscribe(self):
+        if(self.signal is not None and self.linkId != -1):
+            self.signal.disconnect(self.linkId)
+
+        del self.signal
+        self.signal = None
+        self.linkId = -1
+
+    def reemitSignal(self, *args):
+        if(len(args) == 0):
+            self.onEvent()
+        elif(len(args) == 1):
+            self.onEvent(args[0])
+        else:
+            self.onEvent(args)]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="When this input is activated, the box will try to subscribe to the signal or the event passed in the box parameter.&#x0A;&#x0A;If it is retriggered and the parameter has changed, the box will undo the previous subscription and subscribe to the new signal or the new event." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the box and cancel the subscription, if any." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="This output is triggered when the box encounters an error, and contains the error message." id="5" /><Output name="onEvent" type="0" type_size="1" nature="2" inner="0" tooltip="This output is triggered each time the signal/event to which the box is connected is emitted/raised. It will carry the payload associated with the signal emission/event raise." id="6" /><Parameter name="event" inherits_from_parent="0" content_type="3" value="nextinstruction" default_value="" custom_choice="0" tooltip='This parameter describes the signal to connect to, and the service advertising this signal.&#x0A;&#x0A;Use the pattern &quot;Service.Signal&quot; to connect to a signal, or the event key to connect to an event.' id="7" /></Box><Link inputowner="5" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="1" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="2" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="4" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="0" indexofinput="5" outputowner="5" indexofoutput="6" /><Link inputowner="0" indexofinput="5" outputowner="1" indexofoutput="6" /><Link inputowner="0" indexofinput="5" outputowner="2" indexofoutput="6" /><Link inputowner="0" indexofinput="5" outputowner="4" indexofoutput="6" /><Link inputowner="3" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="0" indexofinput="5" outputowner="3" indexofoutput="6" /></Diagram></BehaviorKeyframe></BehaviorLayer></Timeline></Box><Box name="Init Project" id="2" localization="8" tooltip="This box is empty and should be used to create any box diagram you would like.&#x0A;&#x0A;To edit its diagram, double-click on it." x="110" y="36"><bitmap>media/images/box/box-diagram.png</bitmap><script language="4"><content><![CDATA[]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Timeline enable="0"><BehaviorLayer name="behavior_layer1"><BehaviorKeyframe name="keyframe1" index="1"><Diagram scale="84.0896"><Box name="Create Memory Cuisine" id="1" localization="8" tooltip="Stores in NAOqi&apos;s shared memory the given value at the given key." x="280" y="42"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self, p):
+        self.memory.insertData(self.getParameter("key"), p)
+        self.onStopped(p)
+
+    def onInput_onStop(self):
+        self.onUnload() #~ it is recommended to call onUnload of this box in a onStop method, as the code written in onUnload is used to stop the box as well
+        pass]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="0" type_size="1" nature="2" inner="0" tooltip="Receives the value to be inserted in ALMemory." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="0" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished. It contains the inserted value in ALMemory." id="4" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="cuisine" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" /></Box><Box name="Create Memory MealType" id="2" localization="8" tooltip="Stores in NAOqi&apos;s shared memory the given value at the given key." x="275" y="175"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self, p):
+        self.memory.insertData(self.getParameter("key"), p)
+        self.onStopped(p)
+
+    def onInput_onStop(self):
+        self.onUnload() #~ it is recommended to call onUnload of this box in a onStop method, as the code written in onUnload is used to stop the box as well
+        pass]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="0" type_size="1" nature="2" inner="0" tooltip="Receives the value to be inserted in ALMemory." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="0" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished. It contains the inserted value in ALMemory." id="4" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="mealtype" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" /></Box><Box name="Create Memory Option1" id="3" localization="8" tooltip="Stores in NAOqi&apos;s shared memory the given value at the given key." x="274" y="294"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self, p):
+        self.memory.insertData(self.getParameter("key"), p)
+        self.onStopped(p)
+
+    def onInput_onStop(self):
+        self.onUnload() #~ it is recommended to call onUnload of this box in a onStop method, as the code written in onUnload is used to stop the box as well
+        pass]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="0" type_size="1" nature="2" inner="0" tooltip="Receives the value to be inserted in ALMemory." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="0" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished. It contains the inserted value in ALMemory." id="4" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="option1" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" /></Box><Box name="Create Memory Option2" id="4" localization="8" tooltip="Stores in NAOqi&apos;s shared memory the given value at the given key." x="271" y="422"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self, p):
+        self.memory.insertData(self.getParameter("key"), p)
+        self.onStopped(p)
+
+    def onInput_onStop(self):
+        self.onUnload() #~ it is recommended to call onUnload of this box in a onStop method, as the code written in onUnload is used to stop the box as well
+        pass]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="0" type_size="1" nature="2" inner="0" tooltip="Receives the value to be inserted in ALMemory." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="0" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished. It contains the inserted value in ALMemory." id="4" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="option2" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" /></Box><Box name="Create Step" id="5" localization="8" tooltip="Stores in NAOqi&apos;s shared memory the given value at the given key." x="278" y="550"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self, p):
+        self.memory.insertData(self.getParameter("key"), p)
+        self.onStopped(p)
+
+    def onInput_onStop(self):
+        self.onUnload() #~ it is recommended to call onUnload of this box in a onStop method, as the code written in onUnload is used to stop the box as well
+        pass]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="0" type_size="1" nature="2" inner="0" tooltip="Receives the value to be inserted in ALMemory." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="0" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished. It contains the inserted value in ALMemory." id="4" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="nextinstruction" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" /></Box><Box name="Create PrvsProp" id="6" localization="8" tooltip="Stores in NAOqi&apos;s shared memory the given value at the given key." x="273" y="761"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self, p):
+        self.memory.insertData(self.getParameter("key"), p)
+        self.onStopped(p)
+
+    def onInput_onStop(self):
+        self.onUnload() #~ it is recommended to call onUnload of this box in a onStop method, as the code written in onUnload is used to stop the box as well
+        pass]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="0" type_size="1" nature="2" inner="0" tooltip="Receives the value to be inserted in ALMemory." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="0" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished. It contains the inserted value in ALMemory." id="4" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="prvsProp" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" /></Box><Box name="Create NextProp" id="7" localization="8" tooltip="Stores in NAOqi&apos;s shared memory the given value at the given key." x="271" y="652"><bitmap>media/images/box/sensors/STM.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self, p):
+        self.memory.insertData(self.getParameter("key"), p)
+        self.onStopped(p)
+
+    def onInput_onStop(self):
+        self.onUnload() #~ it is recommended to call onUnload of this box in a onStop method, as the code written in onUnload is used to stop the box as well
+        pass]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="0" type_size="1" nature="2" inner="0" tooltip="Receives the value to be inserted in ALMemory." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="0" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished. It contains the inserted value in ALMemory." id="4" /><Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" /><Parameter name="key" inherits_from_parent="0" content_type="3" value="nxtProp" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" /></Box><Link inputowner="1" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="2" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="3" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="4" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="0" indexofinput="4" outputowner="1" indexofoutput="4" /><Link inputowner="0" indexofinput="4" outputowner="2" indexofoutput="4" /><Link inputowner="0" indexofinput="4" outputowner="3" indexofoutput="4" /><Link inputowner="0" indexofinput="4" outputowner="4" indexofoutput="4" /><Link inputowner="5" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="0" indexofinput="4" outputowner="5" indexofoutput="4" /><Link inputowner="7" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="6" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="0" indexofinput="4" outputowner="7" indexofoutput="4" /><Link inputowner="0" indexofinput="4" outputowner="6" indexofoutput="4" /></Diagram></BehaviorKeyframe></BehaviorLayer></Timeline></Box><Link inputowner="8" indexofinput="2" outputowner="6" indexofoutput="5" /><Link inputowner="7" indexofinput="2" outputowner="3" indexofoutput="4" /><Link inputowner="0" indexofinput="4" outputowner="7" indexofoutput="4" /><Link inputowner="2" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="6" indexofinput="2" outputowner="2" indexofoutput="4" /><Link inputowner="3" indexofinput="2" outputowner="2" indexofoutput="4" /><Link inputowner="8" indexofinput="2" outputowner="2" indexofoutput="4" /></Diagram></BehaviorKeyframe></BehaviorLayer></Timeline></Box></ChoregrapheProject>

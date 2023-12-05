@@ -1,0 +1,140 @@
+topic: ~RS()
+language: enu
+
+include:concepts.top
+include:lexicon_enu.top
+
+u:(~hello) ^start(animations/Stand/Gestures/Hey_3) ~joyful ^rand~hello ^stop(animations/Stand/Gestures/Hey_3) ~break1000 ^nextProposal
+
+proposal: ^mode(contextual) To ask for a suggestion, say the word suggest. 
+
+u:(~suggestions) ^goto(cuisineprop)
+
+proposal: %cuisineprop Which cuisine are you in the mood for? I have Italian \pau=80\, French \pau=80\, Chinese \pau=80\ and Mexican!
+    u1:(Italian) $cuisine=italian Great! \pau=200\ Now, do you have a specific type of dish or meal time in mind from the Italian cuisine?
+        u2:(starter) \RSPD=40\ $mealtype=starter Perfect! For a cozy Italian starter, I'd recommend a Caprese Salad. For an adventurous one, how about Arancini Balls? $option1=caprese-salad $option2=arancini-balls
+        u2:(dessert) \RSPD=40\  $mealtype=dessert A quick Italian dessert would be Panna Cotta. Feeling cozy? Try Tiramisu. $option1=panna-cotta $option2=tiramisu
+        u2:(breakfast) \RSPD=40\ $mealtype=breakfast A quick Italian breakfast would be a Cappuccino with a Cornetto. I also recommend a Frittata. $option1=cappuccino $option2=frittata
+        u2:(lunch) \RSPD=40\ $mealtype=lunch For a cozy Italian lunch, try a Margherita Pizza or maybe a Spaghetti Carbonara? $option1=margherita-pizza $option2=spaghetti-carbonara
+        u2:(dinner) \RSPD=40\ $mealtype=dinner Feeling adventurous for dinner? How about Lasagna al Forno? Feeling cozy? Try Osso Buco. $option1=lasagna-al-forno $option2=osso-buco
+        
+   u1:(Chinese) $cuisine=chinese Fantastic choice! \pau=200\ What type of dish or meal time are you considering from the Chinese cuisine?
+        u2:(starter) \RSPD=40\ $mealtype=starter For a cozy Chinese starter, I'd recommend Spring Rolls. For an adventurous one, maybe Spicy Szechuan Dumplings? $option1=spring-rolls $option2=spicy-szechuan-dumplings
+        u2:(dessert) \RSPD=40\ $mealtype=dessert For a quick Chinese dessert, Mango Pudding sounds delightful. Or how about some Red Bean Buns? $option1=mango-pudding $option2=red-bean-buns
+        u2:(breakfast) \RSPD=40\ $mealtype=breakfast A quick Chinese breakfast could be Dim Sum. Another one could be Jian Bing. $option1=dim-sum $option2=jian-bing
+        u2:(lunch) \RSPD=40\ $mealtype=lunch A cozy Chinese lunch might be Sweet and Sour Pork with rice or maybe some Mapo Tofu? $option1=sweet-and-sour-pork $option2=mapo-tofu
+        u2:(dinner) \RSPD=40\ $mealtype=dinner Kung Pao Chicken can be an adventurous Chinese dinner choice! Peking Duck works too! $option1=kung-pao-chicken $option2=peking-duck
+        
+    u1:(French) $cuisine=french Going French! \pau=200\ What type of dish or meal time suits your fancy?
+        u2:(starter) \RSPD=40\ $mealtype=starter For a cozy French starter, Ratatouille is a classic. An adventurous starter? Escargot, perhaps? $option1=ratatouille $option2=escargot
+        u2:(dessert) \RSPD=40\ $mealtype=dessert Crème Brûlée is a delightful quick French dessert. Tarte Tatin is a great adventurous French dessert. $option1=creme-brulee $option2=tarte-tatin
+        u2:(breakfast) \RSPD=40\ $mealtype=breakfast A Croissant with Café au Lait is a cozy start! Croissant with jam is a good adventurous breakfast. $option1=croissant-with-café-au-lait $option2=croissant-with-jam
+        u2:(lunch) \RSPD=40\ $mealtype=lunch Beef Bourguignon for an adventurous palate, or Croque Monsieur for a cozy French lunch. $option1=beef-bourguignon $option2=croque-monsieur
+        u2:(dinner) \RSPD=40\ $mealtype=dinner A cozy French dinner? Coq au Vin is it. An adventurous French dinner? Bouillabaisse it is. $option1=coq-au-vin $option2=bouillabaisse
+                
+    u1:(Mexican) $cuisine=mexican Thinking Mexican! \pau=200\ Which type of dish or meal time resonates with you? 
+        u2:(starter) \RSPD=40\ $mealtype=starter For a cozy Mexican starter, how about Guacamole with Tortilla Chips? For the adventurous palate, I'd suggest Jalapeño Poppers. $option1=guacamole-with-tortilla-chips $option2=jalapeno-poppers
+        u2:(dessert) \RSPD=40\ $mealtype=dessert Churros with Chocolate Sauce is a quick delight. For a cozy dessert, Tres Leches Cake is perfect. $option1=churros-with-chocolate-sauce $option2=tres-leche-cake
+        u2:(breakfast) \RSPD=40\ $mealtype=breakfast A cozy Mexican breakfast would be Huevos Rancheros. Breakfast Burritos are a quick and filling choice. $option1=huevos-rancheros $option2=breakfast-burritos
+        u2:(lunch) \RSPD=40\ $mealtype=lunch Feeling adventurous? Try Tacos al Pastor. A cozy Mexican lunch option would be Quesadillas with fresh salsa. $option1=tacos-al-pastor $option2=quesadillas-with-fresh-salsa
+        u2:(dinner) \RSPD=40\ $mealtype=dinner Enchiladas Suizas is a great cozy dinner choice. Pozole is an adventurous traditional soup. $option1=enchiladas-suizas $option2=pozole
+                
+u:(what did you say before) ^previousProposal
+
+u:(e:choicePageLoaded) Tap on one of the options on the tablet
+u:(e:chosenOption) ~joyful ^start(animations/Stand/Emotions/Positive/Winner_1) You have chosen $chosenOption! Let's start cooking! ^wait(animations/Stand/Emotions/Positive/Winner_1) ["$chosenOption==lasagna-al-forno ^goto(startcookinglasagna)" "$chosenOption==mango-pudding ^goto(startcookingmango)"]
+
+proposal: %startcookinglasagna  \RSPD=100\ Ready Chef? Say next to move from a step to another. ^gotoReactivate(step1)
+proposal:  %step1 \RSPD=90\ $nextinstruction="Cook lasagna noodles, then drain and set aside." Cook lasagna noodles, then drain and set aside.
+    u1:(next) ^gotoReactivate(step2)
+    u1:(e:nxtProp) ^gotoReactivate(step2)
+proposal: %step2 \RSPD=90\ $nextinstruction="Add onions, garlic, and ground meat, tomato sauce, salt, pepper, and basil. Simmer." Add onions, garlic, and ground meat, tomato sauce, salt, pepper, and basil. Simmer.
+    u1:(next)  ^gotoReactivate(step3)
+    u1:("go back") ^gotoReactivate(step1)
+    u1:(e:prvsProp) ^gotoReactivate(step1)
+    u1:(e:nxtProp) ^gotoReactivate(step3)
+proposal: %step3 \RSPD=90\ $nextinstruction="Combine ricotta, egg, and Parmesan for the cheese filling." Combine ricotta, egg, and Parmesan for the cheese filling.
+    u1:(next) ^gotoReactivate(step4)
+    u1:("go back") ^gotoReactivate(step2)
+    u1:(e:prvsProp) ^gotoReactivate(step2)
+    u1:(e:nxtProp) ^gotoReactivate(step4)
+proposal: %step4 \RSPD=90\ $nextinstruction="Alternate layers of noodles, meat sauce, and cheese mixture in a baking dish." Alternate layers of noodles, meat sauce, and cheese mixture in a baking dish.
+    u1:(next) ^gotoReactivate(step5)
+    u1:("go back") ^gotoReactivate(step3)
+    u1:(e:prvsProp) ^gotoReactivate(step3)
+    u1:(e:nxtProp) ^gotoReactivate(step5)
+proposal: %step5 \RSPD=90\ $nextinstruction="Cover with foil, bake for 25 to 40 minutes until golden." Cover with foil, bake for 25 to 40 minutes until golden.
+    u1:(next) ^gotoReactivate(step6)
+    u1:("go back") ^gotoReactivate(step4)
+    u1:(e:prvsProp) ^gotoReactivate(step4)
+    u1:(e:nxtProp) ^gotoReactivate(step6)
+proposal: %step6  \RSPD=90\ In the meantime , would you like some entertainment? 
+    u1:(yes) ^gotoReactivate(entertainment)
+    u1:(no) ^gotoReactivate(step7)
+proposal: %step7 \RSPD=90\ $nextinstruction="Allow to rest for 10 to 15 minutes after baking." Allow to rest for 10 to 15 minutes after baking.
+    u1:(next) ^gotoReactivate(step8)
+    u1:("go back") ^gotoReactivate(step5)
+    u1:(e:prvsProp) ^gotoReactivate(step5)
+    u1:(e:nxtProp) ^gotoReactivate(step8)
+proposal: %step8 \RSPD=90\ $nextinstruction="Slice and serve with fresh basil and Parmesan." Slice and serve with fresh basil and Parmesan.
+    u1:(next) ^gotoReactivate(end)
+    u1:("go back") ^gotoReactivate(step7)
+    u1:(e:prvsProp) ^gotoReactivate(step7)
+    u1:(e:nxtProp) ^gotoReactivate(end)
+    
+proposal: %entertainment Would you like me to play some music or tell a joke?
+    u1:(music) Which music do you want to hear? 
+        u2: (_~SongList) I will play the requested song $songPlay=$1 $songPlay ^run(play_song) ^nextProposal       
+    u1:(joke)  ^rand ~JokeList ^start(animations/Stand/Emotions/Positive/Laugh_3) ^wait(animations/Stand/Emotions/Positive/Laugh_3) ^nextProposal
+    
+
+proposal: %startcookingmango  \RSPD=100\ Ready for dessert? Say next to move from a step to another. ^gotoReactivate(step1M)
+proposal:  %step1M \RSPD=90\ $nextinstruction="Blend 2 ripe mangoes until smooth."Blend 2 ripe mangoes until smooth.
+    u1:(next) ^gotoReactivate(step2M)
+    u1:(e:nxtProp) ^gotoReactivate(step2M)
+proposal: %step2M \RSPD=90\ $nextinstruction="Heat 1 cup milk with 1/2 cup sugar until sugar dissolves." Heat 1 cup milk with 1/2 cup sugar until sugar dissolves.
+    u1:(next)  ^gotoReactivate(step3M)
+    u1:("go back") ^gotoReactivate(step1M)
+    u1:(e:prvsProp) ^gotoReactivate(step1M)
+    u1:(e:nxtProp) ^gotoReactivate(step3M)
+proposal: %step3M \RSPD=90\ $nextinstruction="Dissolve 1 tsp gelatin in 1/4 cup water, then add to the milk mixture.
+" Dissolve 1 tsp gelatin in 1/4 cup water, then add to the milk mixture.
+    u1:(next) ^gotoReactivate(step4M)
+    u1:("go back") ^gotoReactivate(step2M)
+    u1:(e:prvsProp) ^gotoReactivate(step2M)
+    u1:(e:nxtProp) ^gotoReactivate(step4M)
+proposal: %step4M \RSPD=90\ $nextinstruction="Combine mango puree with the milk-gelatin mix." Combine mango puree with the milk-gelatin mix.
+    u1:(next) ^gotoReactivate(step5M)
+    u1:("go back") ^gotoReactivate(step3M)
+    u1:(e:prvsProp) ^gotoReactivate(step3M)
+    u1:(e:nxtProp) ^gotoReactivate(step5M)
+proposal: %step5M \RSPD=90\ $nextinstruction="Whip 1 cup heavy cream until stiff peaks form." Whip 1 cup heavy cream until stiff peaks form.
+    u1:(next) ^gotoReactivate(step6M)
+    u1:("go back") ^gotoReactivate(step4M)
+    u1:(e:prvsProp) ^gotoReactivate(step4M)
+    u1:(e:nxtProp) ^gotoReactivate(step6M)
+proposal: %step6M \RSPD=90\ $nextinstruction="Gently fold whipped cream into mango mixture." Gently fold whipped cream into mango mixture.
+    u1:(next) ^gotoReactivate(step7M)
+    u1:("go back") ^gotoReactivate(step5M)
+    u1:(e:prvsProp) ^gotoReactivate(step5M)
+    u1:(e:nxtProp) ^gotoReactivate(step7M)
+proposal: %step7M \RSPD=90\ $nextinstruction="Pour into serving glasses or dish." Pour into serving glasses or dish.
+    u1:(next) ^gotoReactivate(step8M)
+    u1:("go back") ^gotoReactivate(step6M)
+    u1:(e:prvsProp) ^gotoReactivate(step6M)
+    u1:(e:nxtProp) ^gotoReactivate(step8M)
+proposal: %step8M \RSPD=90\ $nextinstruction="Refrigerate for at least 4 hours." Refrigerate for at least 4 hours.
+    u1:(next) ^gotoReactivate(step9M)
+    u1:("go back") ^gotoReactivate(step7M)
+    u1:(e:prvsProp) ^gotoReactivate(step7M)
+    u1:(e:nxtProp) ^gotoReactivate(step9M)
+proposal: %step9M  \RSPD=90\ In the meantime , would you like some entertainment? 
+    u1:(yes) ^gotoReactivate(entertainmentM)
+    u1:(no) ^gotoReactivate(end)
+
+proposal: %entertainmentM Would you like me to play some music or tell a joke?
+    u1:(music) Which music do you want to hear? 
+        u2: (_~SongList) I will play the requested song $songPlay=$1 $songPlay ^run(play_song) ^gotoReactivate(end)       
+    u1:(joke)  ^rand ~JokeList ^start(animations/Stand/Emotions/Positive/Laugh_3) ^wait(animations/Stand/Emotions/Positive/Laugh_3) ^gotoReactivate(end)
+    
+proposal: %end $nextinstruction="Bon Appetit" You have reached the end of the recipe! ^start(animations/Stand/Emotions/Positive/Winner_2) ^wait(animations/Stand/Emotions/Positive/Winner_2) Enjoy!

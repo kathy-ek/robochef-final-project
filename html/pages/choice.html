@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Interact with Pepper</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../css/w3.css" />
+    <link rel="stylesheet" type="text/css" href="../css/formatting.css" />
+    <link rel="stylesheet" href="../css/all.css" />
+    <script src="/libs/qi/2/qi.js"></script>
+    <script src="../js/jquery.js"></script>
+    <script src="../js/choice.js"></script>
+    <script src="../js/displayinfo.js"></script>
+  </head>
+
+  <body>
+    <div class="w3-content" style="max-width: 1100px">
+      <div class="w3-row w3-padding-24">
+        <div id="informationSection" class="w3-center">
+          <h1 style="text-transform: capitalize">
+            Choices for your <span id="cuisine"></span>
+            <span id="mealtype"></span>
+          </h1>
+        </div>
+      </div>
+      <div class="w3-row" style="padding-bottom: 32px">
+        <div
+          class="w3-col m6 w3-padding-large"
+          style="
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <img
+            id="option1"
+            alt="Option 1"
+            style="width: 350px; height: 350px; margin-bottom: 8px"
+          />
+          <h3
+            class="w3-center"
+            style="text-transform: capitalize"
+            id="optionOneLabel"
+          ></h3>
+        </div>
+
+        <div
+          class="w3-col m6 w3-padding-large"
+          style="
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <img
+            id="option2"
+            alt="Option 2"
+            style="width: 350px; height: 350px; margin-bottom: 8px"
+          />
+          <h3
+            class="w3-center"
+            style="text-transform: capitalize"
+            id="optionTwoLabel"
+          ></h3>
+        </div>
+      </div>
+      <hr />
+    </div>
+  </body>
+  <script type="text/javascript">
+    displayPageInformation();
+  </script>
+</html>

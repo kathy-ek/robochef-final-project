@@ -1,0 +1,49 @@
+topic: ~concepts()
+language: enu
+
+concept:(suggestions) [
+  "recommendation"
+  "suggestion"
+  "recipe idea"
+  "menu recommendation"
+  "dish proposal"
+  "cooking tip"
+  "suggest"
+  "advice"
+  "recommend"
+  "cuisine insight"
+  "meal plan idea"
+  "serving suggestion"
+  "proposal"
+  "propose"
+]
+
+
+concept:(cuisines) [
+    "Italian"
+    "Mexican"
+    "Indian"
+    "French"
+]
+
+concept:(meal_types) [
+    "starter"
+    "dessert"
+    "breakfast"
+    "lunch"
+    "dinner"
+]
+
+concept:(moods) [
+    "cozy"
+    "adventurous"
+    "quick"
+]
+
+concept:(break1000) \pau=1000\
+concept:(break2000) \pau=2000\
+concept:(break3000) \pau=3000\
+
+concept:(SongList) ["careless whisper" "viva la vida" "ratatouille"]
+concept:(JokeList) ["Did you hear about the Italian chef that died? \pau=1000\ He pasta way." 
+                    "What do you call cheese that is not yours?  \pau=1000\  Nacho cheese."]
